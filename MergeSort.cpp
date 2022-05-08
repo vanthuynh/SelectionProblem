@@ -122,7 +122,7 @@ void merge(vector<int> &A, const int low, const int mid, const int high)
 void mergeSort(vector<int> &A, int low, int high)
 {
 	if (low < high) {
-		
+
 		int mid = low + (high - low) / 2;
 
 		mergeSort(A, low, mid);
@@ -132,7 +132,7 @@ void mergeSort(vector<int> &A, int low, int high)
 		merge(A, low, mid, high);
 	}
 }
-void Algorithm1(int N, vector<int> const &A) 
+void Algorithm1(int N, vector<int> const &A)
 {
 	int k1 = SMALLEST * N;
 	int k2 = QUARTER * N;
