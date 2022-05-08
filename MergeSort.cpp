@@ -35,18 +35,12 @@ void populateList(int N, vector<int> &A, int value);
 void displayList(int N, const vector<int> const &A);
 vector<int> slice(vector<int> const& v, int m, int n);
 vector<int> generateList(int N);
-//vector<int> slice(vector<int> &v, int m, int n)
-//{
-//	vector<int> vec(n - m + 1);
-//	copy(v.begin() + m, v.begin() + n + 1, vec.begin());
-//	return vec;
-//}
 void merge(vector<int> & A, const int low, const int mid, const int high);
 void mergeSort(vector<int> &A, int low, int high);
-void Algorithm1(int k);
-//int Algorithm2(int k);
-//int Algorithm3(int k);
-//int Algorithm4(int k);
+void Selectkth1(int k, vector<int> const& A);
+//int Selectkth2(int k);
+//int Selectkth3(int k);
+//int Selectkth4(int k);
 
 /*------------------ Funtion Implementation ------------------------*/
 void populateList(int N, vector<int> &A, int value)
@@ -132,7 +126,7 @@ void mergeSort(vector<int> &A, int low, int high)
 		merge(A, low, mid, high);
 	}
 }
-void Algorithm1(int N, vector<int> const &A)
+void Selectkth1(int N, vector<int> const &A)
 {
 	int k1 = SMALLEST * N;
 	int k2 = QUARTER * N;
@@ -165,30 +159,30 @@ int main(void)
 	vector<int> d = generateList(500);
 	vector<int> e = generateList(1000);
 
-	Algorithm1(10, a);
-	//Algorithm2(10, a);
-	//Algorithm3(10, a);
-	//Algorithm4(10, a);
+	Selectkth1(10, a);
+	//Selectkth2(10, a);
+	//Selectkth3(10, a);
+	//Selectkth4(10, a);
 
-	Algorithm1(50, b);
-	//Algorithm2(50, b);
-	//Algorithm3(50, b);
-	//Algorithm4(50, b);
+	Selectkth1(50, b);
+	//Selectkth2(50, b);
+	//Selectkth3(50, b);
+	//Selectkth4(50, b);
 
-	Algorithm1(100, c);
-	//Algorithm2(100, c);
-	//Algorithm3(100, c);
-	//Algorithm4(100, c);
+	Selectkth1(100, c);
+	//Selectkth2(100, c);
+	//Selectkth3(100, c);
+	//Selectkth4(100, c);
 
-	Algorithm1(500, d);
-	//Algorithm2(500, d);
-	//Algorithm3(500, d);
-	//Algorithm4(500, d);
+	Selectkth1(500, d);
+	//Selectkth2(500, d);
+	//Selectkth3(500, d);
+	//Selectkth4(500, d);
 
-	Algorithm1(1000, e);
-	//Algorithm2(1000, e);
-	//Algorithm3(1000, e);
-	//Algorithm4(1000, e;
+	Selectkth1(1000, e);
+	//Selectkth2(1000, e);
+	//Selectkth3(1000, e);
+	//Selectkth4(1000, e;
 
 	return 0;
 }
