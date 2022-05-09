@@ -45,7 +45,7 @@ void partition(vector<int>& A, int low, int high, int &pivotPos);
 int quickSortIterative(vector<int>& A, int N, const int k);
 void Select_kth_1(vector<int> const& A);
 void Select_kth_2(vector<int> const& A);
-//int Select_kth_3(int k);
+void Select_kth_3(vector<int> const& A);
 //int Select_kth_4(int k);
 
 /*------------------ Helper Funtion Implementation ------------------------*/
@@ -137,8 +137,8 @@ void mergeSort(vector<int>& A, int low, int high)
 }
 void partition(vector<int>& A, int low, int high, int &pivotPos)
 {
-	int pivotVal = A[low];
-	int j = low;
+	int pivotVal = A[low]; // value of pivot is at index 0
+	int j = low;		// any values on the left of j is < pivotVal
 	for (int i = low+1; i <= high; ++i) {
 		if (A[i] < pivotVal) {
 			j++;
@@ -148,17 +148,15 @@ void partition(vector<int>& A, int low, int high, int &pivotPos)
 	pivotPos = j;
 	swap(A[low], A[pivotPos]);
 }
-int quickSortIterative(vector<int> const& A, int N, const int k)
+int quickSortIterative(vector<int> &A, int N, const int k)
 {
-	vector<int> temp(A); // or vector<int> temp(A.begin(),A.end());
-	// begin partitioning
-	int m = 0, j = N-1;
-	int pivotPos = k;
+	int m = 0, j = N-1;	// partition with A[m...j]
+	int pivotPos = 0;
 	while (true) {
-		partition(temp, m, j, pivotPos);
+		partition(A, m, j, pivotPos);
 		if (k == pivotPos) {
 			//displayList(N, temp);
-			return temp[k];
+			return A[k];
 		}
 		else if (k < pivotPos) {
 			j = pivotPos - 1;
@@ -168,25 +166,23 @@ int quickSortIterative(vector<int> const& A, int N, const int k)
 		}
 	}
 }
-int quickSortRecursive(vector<int> const& A, int low, int high, const int k)
+int quickSortRecursive(vector<int> &A, int low, int high, const int k)
 {
-	vector<int> temp(A);
-	// begin partitioning
 	int m = low, j = high;
-	int pivotPos = k;
-	while (true) {
-		partition(temp, m, j, pivotPos);
-		if (k == pivotPos) {
-			//displayList(N, temp);
-			return temp[k];
-		}
-		else if (k < pivotPos) {
-			quickSortRecursive(A, low, pivotPos - 1, k);
-		}
-		else {
-			quickSortRecursive(A, pivotPos + 1, high, k);
-		}
+	int pivotPos;
+	partition(A, m, j, pivotPos);
+	int ans;
+	if (k == pivotPos) {
+		//displayList(N, temp);
+		return A[k];
 	}
+	else if (k < pivotPos) {
+		ans = quickSortRecursive(A, low, pivotPos - 1, k);
+	}
+	else {
+		ans = quickSortRecursive(A, pivotPos + 1, high, k);
+	}
+	return ans;
 }
 void Select_kth_1(vector<int> const& A)
 {
@@ -211,14 +207,35 @@ void Select_kth_2(vector<int> const& A)
 	int kList[5] = { k1,k2,k3,k4,k5 };
 	int result[5];
 	int timePerPartition[5];
-
-	cout << "Given: ";
-	displayList(N, A);
+	vector<int> temp(A.begin(), A.end());
+	cout << "\nSelect_kth_2 Result: " << endl;
 	// repeat the partition 5 times for 5 Kth posiion
 	for (int i = 0; i < 5; i++) {
 		auto start = high_resolution_clock::now();
-		result[i] = quickSortIterative(A, N, kList[i]);
-		cout << "Kth " << result[i] << endl;
+		result[i] = quickSortIterative(temp, N, kList[i]);
+		auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<nanoseconds>(stop - start);
+		timePerPartition[i] = duration.count();
+	}
+
+	//printf("%-25s%-20s%-10s%-10s%-10s\n", "Name", "Title", "Gross", "Tax", "Net");
+	cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
+	cout << setw(10) << result[0] << setw(10) << result[1] << setw(10) << result[2] << setw(10) << result[3] << setw(10) << result[4] << endl;
+	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;
+}
+void Select_kth_3(vector<int> const& A)
+{
+	int N = A.size();
+	int k1 = 0, k2 = N / 4, k3 = N / 2, k4 = 3 * N / 4, k5 = N - 1;
+	int kList[5] = { k1,k2,k3,k4,k5 };
+	int result[5];
+	int timePerPartition[5];
+	vector<int> temp(A.begin(), A.end());
+	cout << "\nSelect_kth_3 Result: " << endl;
+	// repeat the partition 5 times for 5 Kth posiion
+	for (int i = 0; i < 5; i++) {
+		auto start = high_resolution_clock::now();
+		result[i] = quickSortRecursive(temp, 0, N-1, kList[i]);
 		auto stop = high_resolution_clock::now();
 		auto duration = duration_cast<nanoseconds>(stop - start);
 		timePerPartition[i] = duration.count();
@@ -257,13 +274,13 @@ int main(void)
 	cout << "Size " << a.size() << ": " << endl;
 	Select_kth_1(a);
 	Select_kth_2(a);
-	//Select_kth_3(a);
+	Select_kth_3(a);
 	//Select_kth_4(a);
 
 	cout << "Size " << b.size() << ": " << endl;
 	Select_kth_1(b);
 	Select_kth_2(b);
-	//Select_kth_3(b);
+	Select_kth_3(b);
 	//Select_kth_4(b);
 
 	//cout << "Size " << c.size() << ": " << endl;
