@@ -30,32 +30,24 @@ const float LAST_SMALLEST = 1;
 
 const int LARGEST_ARRAY_SIZE = 1000;
 
+/*------------------ Helper Function Prototypes --------------------------*/
+vector<int> slice(vector<int> const& v, int m, int n);
+void swap(int *a, int *b);
+
 /*------------------ Function Prototypes --------------------------*/
 void populateList(int N, vector<int> &A, int value);
 void displayList(int N, const vector<int> const &A);
-vector<int> slice(vector<int> const& v, int m, int n);
 vector<int> generateList(int N);
 void merge(vector<int> & A, const int low, const int mid, const int high);
 void mergeSort(vector<int> &A, int low, int high);
-void Selectkth1(int k, vector<int> const& A);
-//int Selectkth2(int k);
+void partition(vector<int>& A, int low, int high, int &pivotPos);
+void quickSortIterative(vector<int>& A, int low, int high, const int& k);
+void Selectkth1(vector<int> const& A);
+void Selectkth2(vector<int> const& A);
 //int Selectkth3(int k);
 //int Selectkth4(int k);
 
-/*------------------ Funtion Implementation ------------------------*/
-void populateList(int N, vector<int> &A, int value)
-{
-	for (int i = 0; i < N; ++i) {
-		A[i] = value;
-	}
-}
-void displayList(int N, const vector<int> const &A)
-{
-	for (int i = 0; i < N; ++i) {
-		cout << setw(4) << A[i] << " |";
-	}
-	cout << "\n-------------------------" << endl;
-}
+/*------------------ Helper Funtion Implementation ------------------------*/
 vector<int> slice(vector<int> const& v, int m, int n)
 {
 	auto first = v.begin() + m;
@@ -63,9 +55,31 @@ vector<int> slice(vector<int> const& v, int m, int n)
 	vector<int> vec(first, last);
 	return vec;
 }
+void swap(int* a, int* b)
+{
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+
+/*------------------ Funtion Implementation ------------------------*/
+void populateList(int N, vector<int>& A, int value)
+{
+	for (int i = 0; i < N; ++i) {
+		A[i] = value;
+	}
+}
+void displayList(int N, const vector<int> const& A)
+{
+	for (int i = 0; i < N; ++i) {
+		cout << setw(4) << A[i] << " |";
+	}
+	cout << "\n-------------------------" << endl;
+}
 vector<int> generateList(int N)
 {
-	srand(time(0));
+	//srand(time(0));
+	srand(350);
 	// 1. Creating vector
 	vector<int> A(N);
 
@@ -76,7 +90,7 @@ vector<int> generateList(int N)
 	}
 	return A;
 }
-void merge(vector<int> &A, const int low, const int mid, const int high)
+void merge(vector<int>& A, const int low, const int mid, const int high)
 {
 	// create 2 half vector
 	vector<int> L(mid - low + 1);
@@ -113,7 +127,7 @@ void merge(vector<int> &A, const int low, const int mid, const int high)
 		k++;
 	}
 }
-void mergeSort(vector<int> &A, int low, int high)
+void mergeSort(vector<int>& A, int low, int high)
 {
 	if (low < high) {
 
@@ -126,12 +140,56 @@ void mergeSort(vector<int> &A, int low, int high)
 		merge(A, low, mid, high);
 	}
 }
-void Selectkth1(int N, vector<int> const &A)
+void partition(vector<int>& A, int low, int high, int &pivotPos)
 {
-	int k1 = SMALLEST * N;
-	int k2 = QUARTER * N;
-	int k3 = HALF * N;
-	int k4 = THREE_QUARTER * N;
+	int pivotVal = A[low];
+	int j = low;
+	for (int i = low+1; i < high; ++i) {
+		if (A[i] < pivotVal) {
+			j++;
+			swap(&A[i], &A[j]);
+		}
+	}
+	pivotPos = j;
+	swap(&A[low], &A[pivotPos]);
+
+	///*TextBook version*/
+	//int pivotVal = A[high];
+	//int i = low - 1;
+	//for (int j = 0; j < high-1; j++)
+	//{
+	//	if (A[j] <= pivotVal) {
+	//		i += 1;
+	//		swap(&A[i], &A[j]);
+	//	}
+	//}
+	//swap(&A[i+1], &A[high]);
+	//return i + 1;
+}
+void quickSortIterative(vector<int>& A, int low, int high, const int& k)
+{
+	int m = 1, j = low;
+	int pivotPos;
+	while (true) {
+		partition(A, m, j, pivotPos);
+		if (k == pivotPos) {
+			return A[k];
+		}
+		else if (k < pivotPos) {
+			j = pivotPos - 1;
+		}
+		else {
+			m = pivotPos + 1;
+		}
+	}
+}
+void Selectkth1(vector<int> const& A)
+{
+	int N = A.size();
+	int k1 = 0;
+	int k2 = N / 4 ;
+	int k3 = N / 2;
+	int k4 = 3 * N / 4;
 	int k5 = N - 1;
 	vector<int> temp(A.begin(), A.end());
 
@@ -144,7 +202,30 @@ void Selectkth1(int N, vector<int> const &A)
 	//	cout << "Sorted: ";
 	//	displayList(N, temp);
 	//}
-	cout << "Size " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
+	cout << "Select-kth1 takes " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
+	cout << setw(6) << to_string(k1) + "th" << setw(6) << to_string(k2) + "th" << setw(6) << to_string(k3) + "th" << setw(6) << to_string(k4) + "th" << setw(6) << to_string(k5) + "th" << endl;
+	cout << setw(6) << temp[k1] << setw(6) << temp[k2] << setw(6) << temp[k3] << setw(6) << temp[k4] << setw(6) << temp[k5] << endl;
+}
+void Selectkth2(vector<int> const& A)
+{
+	int N = A.size();
+	int k1 = 0;
+	int k2 = N / 4;
+	int k3 = N / 2;
+	int k4 = 3 * N / 4;
+	int k5 = N - 1;
+	vector<int> temp(A.begin(), A.end());
+
+	auto start = high_resolution_clock::now();
+	quickSortIterative(temp, 0, N - 1, k1);
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<nanoseconds>(stop - start);
+
+	//if (N < 100) {
+	//	cout << "Sorted: ";
+	//	displayList(N, temp);
+	//}
+	cout << "Select-kth1 takes " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
 	cout << setw(6) << to_string(k1) + "th" << setw(6) << to_string(k2) + "th" << setw(6) << to_string(k3) + "th" << setw(6) << to_string(k4) + "th" << setw(6) << to_string(k5) + "th" << endl;
 	cout << setw(6) << temp[k1] << setw(6) << temp[k2] << setw(6) << temp[k3] << setw(6) << temp[k4] << setw(6) << temp[k5] << endl;
 }
@@ -159,30 +240,31 @@ int main(void)
 	vector<int> d = generateList(500);
 	vector<int> e = generateList(1000);
 
-	Selectkth1(10, a);
-	//Selectkth2(10, a);
-	//Selectkth3(10, a);
-	//Selectkth4(10, a);
+	cout << "Size " << a.size() << ": " << endl;
+	Selectkth1(a);
+	//Selectkth2(a);
+	//Selectkth3(a);
+	//Selectkth4(a);
 
-	Selectkth1(50, b);
-	//Selectkth2(50, b);
-	//Selectkth3(50, b);
-	//Selectkth4(50, b);
+	Selectkth1(b);
+	//Selectkth2(b);
+	//Selectkth3(b);
+	//Selectkth4(b);
 
-	Selectkth1(100, c);
-	//Selectkth2(100, c);
-	//Selectkth3(100, c);
-	//Selectkth4(100, c);
+	Selectkth1(c);
+	//Selectkth2(c);
+	//Selectkth3(c);
+	//Selectkth4(c);
 
-	Selectkth1(500, d);
-	//Selectkth2(500, d);
-	//Selectkth3(500, d);
-	//Selectkth4(500, d);
+	Selectkth1(d);
+	//Selectkth2(d);
+	//Selectkth3(d);
+	//Selectkth4(d);
 
-	Selectkth1(1000, e);
-	//Selectkth2(1000, e);
-	//Selectkth3(1000, e);
-	//Selectkth4(1000, e;
+	Selectkth1(e);
+	//Selectkth2(e);
+	//Selectkth3(e);
+	//Selectkth4(e;
 
 	return 0;
 }
