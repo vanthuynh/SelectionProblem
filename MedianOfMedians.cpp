@@ -29,8 +29,8 @@ const float K3 = 0.5;
 const float K4 = 0.75;
 const float K5 = 1;
 
-const int TEST_TRIAL = 1;
-const int SET_AMOUNT = 1;
+const int TEST_TRIAL = 20;
+const int SET_AMOUNT = 50;
 const int LARGEST_ARRAY_SIZE = 10000;
 
 /*------------------ Helper Function Prototypes --------------------------*/
@@ -38,7 +38,7 @@ vector<int> slice(vector<int> const& v, int m, int n);
 
 /*------------------ Function Prototypes --------------------------*/
 void populateList(int N, vector<int> &A, int value);
-void displayList(int N, vector<int> const &A);
+void displayList(vector<int> const &A);
 vector<int> generateList(int N);
 void merge(vector<int> & A, const int low, const int mid, const int high);
 void mergeSort(vector<int> &A, int low, int high);
@@ -47,7 +47,8 @@ int quickSortIterative(vector<int>& A, int N, const int k);
 long double Select_kth_1(vector<int> const& A);
 long double  Select_kth_2(vector<int> const& A, int& k);
 long double  Select_kth_3(vector<int> const& A, int& k);
-long double Select_kth_4(vector<int> const& A, int& k);
+int Select_kth_4(vector<int>& arr, int low, int high, int k);
+int partition2(vector<int>& arr, int low, int high, int k);
 
 /*------------------ Helper Funtion Implementation ------------------------*/
 vector<int> slice(vector<int> const& v, int m, int n)
@@ -65,9 +66,9 @@ void populateList(int N, vector<int>& A, int value)
 		A[i] = value;
 	}
 }
-void displayList(int N, vector<int> const& A)
+void displayList(vector<int> const& A)
 {
-	for (int i = 0; i < N; ++i) {
+	for (int i = 0; i < A.size(); ++i) {
 		cout << setw(4) << A[i] << " |";
 	}
 	cout << "\n-------------------------" << endl;
@@ -83,6 +84,7 @@ vector<int> generateList(int N)
 	for (int i = 0; i < N; ++i) {
 		A[i] = rand() % RANDOM_TOTAL_BOUND + (RANDOM_MIN_BOUND);
 	}
+	//cout << A.size() << " " << A.capacity();
 	return A;
 }
 void merge(vector<int>& A, const int low, const int mid, const int high)
@@ -192,26 +194,18 @@ long double  Select_kth_1(vector<int> const& A)
 	mergeSort(temp, 0, temp.size() - 1);
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<nanoseconds>(stop - start);
-
-	/*cout << "Select-kth1 takes " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
-	cout << setw(6) << to_string(k1) + "th" << setw(6) << to_string(k2) + "th" << setw(6) << to_string(k3) + "th" << setw(6) << to_string(k4) + "th" << setw(6) << to_string(k5) + "th" << endl;
-	cout << setw(6) << temp[k1] << setw(6) << temp[k2] << setw(6) << temp[k3] << setw(6) << temp[k4] << setw(6) << temp[k5] << endl;*/
 	return duration.count();
 }
 long double  Select_kth_2(vector<int> const& A, int& k)
 {
 	int N = A.size();						// size of the array
-	vector<int> temp(A.begin(), A.end());	// copy an the array to run
+	vector<int> temp = A;	// copy an the array to run
 	long double timePerPartition;
 	auto start = high_resolution_clock::now();
-	int ans = quickSortIterative(temp, N, k);
+	int ans = quickSortIterative(temp, N-1, k);
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<nanoseconds>(stop - start);
 	timePerPartition = duration.count();
-
-	/*cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
-	cout << setw(10) << result[0] << setw(10) << result[1] << setw(10) << result[2] << setw(10) << result[3] << setw(10) << result[4] << endl;
-	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;*/
 	return timePerPartition;
 
 }
@@ -226,70 +220,59 @@ long double  Select_kth_3(vector<int> const& A, int& k)
 	auto duration = duration_cast<nanoseconds>(stop - start);
 	timePerPartition = duration.count();
 
-	/*cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
-	cout << setw(10) << result[0] << setw(10) << result[1] << setw(10) << result[2] << setw(10) << result[3] << setw(10) << result[4] << endl;
-	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;*/
 	return timePerPartition;
-
 }
-//long double  Select_kth_4(vector<int> const& A)
-//{
-//	long double  result;
-//
-//	return result;
-//}
 
-int partition2(vector<int>& arr, int l, int r, int k);
 int findMedian(vector<int>& arr, int index, int n)
 {
 	sort(arr.begin() + index, arr.begin() + index + n); // Sort the array
 	return arr[index + (n / 2)];                        // Return middle element
 }
 
-int kthSmallest(vector<int>& arr, int l, int r, int k)
+int Select_kth_4(vector<int>& arr, int low, int high, int k)
 {
 
-	if (k > 0 && k <= r - l + 1)
+	if (k > 0 && k <= high - low + 1)
 	{
-		int n = r - l + 1;
+		int n = high - low + 1;
 		int i;
 		vector<int> median((n + 4) / 5, 0);
 		for (i = 0; i < n / 5; i++)
 		{
-			median[i] = findMedian(arr, l + i * 5, 5);
+			median[i] = findMedian(arr, low + i * 5, 5);
 		}
 
 		if (i * 5 < n)
 		{
-			median[i] = findMedian(arr, l + i * 5, n % 5);
+			median[i] = findMedian(arr, low + i * 5, n % 5);
 			i++;
 		}
-		int medOfMed = (i == 1) ? median[i - 1] : kthSmallest(median, 0, i - 1, i / 2);
+		int medOfMed = (i == 1) ? median[i - 1] : Select_kth_4(median, 0, i - 1, i / 2);
 
-		int pos = partition2(arr, l, r, medOfMed);
+		int pos = partition2(arr, low, high, medOfMed);
 
-		if (pos - l == k - 1)
+		if (pos - low == k - 1)
 			return arr[pos];
-		if (pos - l > k - 1)
-			return kthSmallest(arr, l, pos - 1, k);
+		if (pos - low > k - 1)
+			return Select_kth_4(arr, low, pos - 1, k);
 
-		return kthSmallest(arr, pos + 1, r, k - pos + l - 1);
+		return Select_kth_4(arr, pos + 1, high, k - pos + low - 1);
 	}
 
 	return INT_MAX;
 }
 
-int partition2(vector<int>& arr, int l, int r, int x)
+int partition2(vector<int>& arr, int low, int high, int x)
 {
 
 	int i;
-	for (i = l; i < r; i++)
+	for (i = low; i < high; i++)
 		if (arr[i] == x)
 			break;
-	swap(arr[i], arr[r]);
+	swap(arr[i], arr[high]);
 
-	i = l;
-	for (int j = l; j <= r - 1; j++)
+	i = low;
+	for (int j = low; j <= high - 1; j++)
 	{
 		if (arr[j] <= x)
 		{
@@ -297,7 +280,7 @@ int partition2(vector<int>& arr, int l, int r, int x)
 			i++;
 		}
 	}
-	swap(arr[i], arr[r]);
+	swap(arr[i], arr[high]);
 	return i;
 }
 
@@ -306,7 +289,7 @@ int main(void)
 {
 	long double result[5];
 
-	int nList[7] = { 10, 50, 100, 500, 1000, 5000, 10000 };
+	int nList[7] = { 10, 50, 100, 500, 1000, 5000, 10000};
 	long double res1=0;
 	long double res2=0;
 	long double res3=0;
@@ -314,7 +297,7 @@ int main(void)
 	for (int i = 0; i < 7; i++)
 	{
 		int N = nList[i];									// assign the array size N
-		int kList[5] = { 0, N / 4, N / 2, 3 * N / 4,N };	// calculate Kth positions after having size N
+		int kList[5] = { 0, N / 4, N / 2, (3 * N) / 4,N-1};	// calculate Kth positions after having size N
 		long double  averageTime1=0;							// averageTime for array size N
 		long double  averageTime2=0;
 		long double  averageTime3=0;
@@ -334,10 +317,17 @@ int main(void)
 				long double  timePerPivot4 = 0;
 				for (int t = 1; t <= TEST_TRIAL; ++t)
 				{
-					timePerPivot1 += Select_kth_1(a) / 1000000;
-					//timePerPivot2 += Select_kth_2(a, kList[k]) / 1000000;
-					//timePerPivot3 += Select_kth_3(a, kList[k]) / 1000000;
-					//timePerPivot4 += Select_kth_4(a, kList[k]);
+					timePerPivot1 += Select_kth_1(a) / 1000000.0;
+					timePerPivot2 += Select_kth_2(a, kList[k]) / 1000000.0;
+					timePerPivot3 += Select_kth_3(a, kList[k]) / 1000000.0;
+
+					vector<int> temp = a;	// copy an the array to run
+					auto start = high_resolution_clock::now();
+					int ans = Select_kth_4(a, 0, a.size()-1, kList[k]+1);
+					auto stop = high_resolution_clock::now();
+					auto duration = duration_cast<nanoseconds>(stop - start);
+					timePerPivot4 += duration.count() / 1000000.0;
+
 				}
 				totalTime1 += timePerPivot1 / TEST_TRIAL;
 				totalTime2 += timePerPivot2 / TEST_TRIAL;
@@ -356,57 +346,6 @@ int main(void)
 		cout << "For size " << N << ", K3 average is: " << averageTime3 / SET_AMOUNT << " msec" << endl;
 		cout << "For size " << N << ", K4 average is: " << averageTime4 / SET_AMOUNT << " msec" << endl;
 	}
-
-
-	/* Below code is to test individually */
-	//vector<int> a = generateList(10);
-	//vector<int> b = generateList(50);
-	//vector<int> c = generateList(100);
-	//vector<int> d = generateList(500);
-	//vector<int> e = generateList(1000);
-	//cout << "Size " << a.size() << ": " << endl;
-	//Select_kth_1(a);
-	//Select_kth_2(a);
-	//Select_kth_3(a);
-	//Select_kth_4(a);
-
-
-	//cout << "Size " << b.size() << ": " << endl;
-	//Select_kth_1(b);
-	//Select_kth_2(b);
-	//Select_kth_3(b);
-	//Select_kth_4(b);
-
-
-
-
-	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K1+1) << endl;
-	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K2 * 10 + 1)<< endl;
-	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K3 * 10 + 1)<< endl;
-	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K4 * 10 + 1)<< endl;
-	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K5 * 10) << endl;
-
-
-
-
-
-	//cout << "Size " << c.size() << ": " << endl;
-	//Select_kth_1(c);
-	//Select_kth_2(c);
-	//Select_kth_3(c);
-	//Select_kth_4(c);
-
-	//cout << "Size " << d.size() << ": " << endl;
-	//Select_kth_1(d);
-	//Select_kth_2(d);
-	//Select_kth_3(d);
-	//Select_kth_4(d);
-
-	//cout << "Size " << e.size() << ": " << endl;
-	//Select_kth_1(e);
-	//Select_kth_2(e);
-	//Select_kth_3(e);
-	//Select_kth_4(e;
 
 	return 0;
 }
