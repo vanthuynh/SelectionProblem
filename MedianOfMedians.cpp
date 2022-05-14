@@ -29,8 +29,8 @@ const float K3 = 0.5;
 const float K4 = 0.75;
 const float K5 = 1;
 
-const int TEST_TRIAL = 20;
-const int SET_AMOUNT = 50;
+const int TEST_TRIAL = 1;
+const int SET_AMOUNT = 1;
 const int LARGEST_ARRAY_SIZE = 10000;
 
 /*------------------ Helper Function Prototypes --------------------------*/
@@ -45,9 +45,9 @@ void mergeSort(vector<int> &A, int low, int high);
 void partition(vector<int>& A, int low, int high, int &pivotPos);
 int quickSortIterative(vector<int>& A, int N, const int k);
 long double Select_kth_1(vector<int> const& A);
-long double  Select_kth_2(vector<int> const& A);
-long double  Select_kth_3(vector<int> const& A);
-long double Select_kth_4(vector<int> const& A);
+long double  Select_kth_2(vector<int> const& A, int& k);
+long double  Select_kth_3(vector<int> const& A, int& k);
+long double Select_kth_4(vector<int> const& A, int& k);
 
 /*------------------ Helper Funtion Implementation ------------------------*/
 vector<int> slice(vector<int> const& v, int m, int n)
@@ -185,67 +185,51 @@ int quickSortRecursive(vector<int> &A, int low, int high, const int k)
 }
 long double  Select_kth_1(vector<int> const& A)
 {
-	int N = A.size();
-	int k1 = 0, k2 = N / 4, k3 = N / 2, k4 = 3 * N / 4, k5 = N - 1;
-
-	vector<int> temp(A.begin(), A.end());
+	int N = A.size();						// size of the array
+	vector<int> temp(A.begin(), A.end());	// copy an the array to run
 
 	auto start = high_resolution_clock::now();
 	mergeSort(temp, 0, temp.size() - 1);
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<nanoseconds>(stop - start);
 
-	cout << "Select-kth1 takes " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
+	/*cout << "Select-kth1 takes " << setw(4) << N << ": " << duration.count() << " nsec" << endl;
 	cout << setw(6) << to_string(k1) + "th" << setw(6) << to_string(k2) + "th" << setw(6) << to_string(k3) + "th" << setw(6) << to_string(k4) + "th" << setw(6) << to_string(k5) + "th" << endl;
-	cout << setw(6) << temp[k1] << setw(6) << temp[k2] << setw(6) << temp[k3] << setw(6) << temp[k4] << setw(6) << temp[k5] << endl;
-	return 1;
+	cout << setw(6) << temp[k1] << setw(6) << temp[k2] << setw(6) << temp[k3] << setw(6) << temp[k4] << setw(6) << temp[k5] << endl;*/
+	return duration.count();
 }
-long double  Select_kth_2(vector<int> const& A)
+long double  Select_kth_2(vector<int> const& A, int& k)
 {
-	int N = A.size();
-	int k1 = 0, k2 = N / 4, k3 = N / 2, k4 = 3 * N / 4, k5 = N - 1;
-	int kList[5] = { k1,k2,k3,k4,k5 };
-	int result[5];
-	int timePerPartition[5];
-	vector<int> temp(A.begin(), A.end());
-	cout << "\nSelect_kth_2 Result: " << endl;
-	// repeat the partition 5 times for 5 Kth posiion
-	for (int i = 0; i < 5; i++) {
-		auto start = high_resolution_clock::now();
-		result[i] = quickSortIterative(temp, N, kList[i]);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<nanoseconds>(stop - start);
-		timePerPartition[i] = duration.count();
-	}
+	int N = A.size();						// size of the array
+	vector<int> temp(A.begin(), A.end());	// copy an the array to run
+	long double timePerPartition;
+	auto start = high_resolution_clock::now();
+	int ans = quickSortIterative(temp, N, k);
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<nanoseconds>(stop - start);
+	timePerPartition = duration.count();
 
-	cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
+	/*cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
 	cout << setw(10) << result[0] << setw(10) << result[1] << setw(10) << result[2] << setw(10) << result[3] << setw(10) << result[4] << endl;
-	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;
-	return 1;
+	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;*/
+	return timePerPartition;
 
 }
-long double  Select_kth_3(vector<int> const& A)
+long double  Select_kth_3(vector<int> const& A, int& k)
 {
-	int N = A.size();
-	int k1 = 0, k2 = N / 4, k3 = N / 2, k4 = 3 * N / 4, k5 = N - 1;
-	int kList[5] = { k1,k2,k3,k4,k5 };
-	int result[5];
-	int timePerPartition[5];
-	vector<int> temp(A.begin(), A.end());
-	cout << "\nSelect_kth_3 Result: " << endl;
-	// repeat the partition 5 times for 5 Kth posiion
-	for (int i = 0; i < 5; i++) {
-		auto start = high_resolution_clock::now();
-		result[i] = quickSortRecursive(temp, 0, N-1, kList[i]);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<nanoseconds>(stop - start);
-		timePerPartition[i] = duration.count();
-	}
+	int N = A.size();						// size of the array
+	vector<int> temp(A.begin(), A.end());	// copy an the array to run
+	long double timePerPartition;
+	auto start = high_resolution_clock::now();
+	int ans = quickSortRecursive(temp, 0, N-1, k);
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<nanoseconds>(stop - start);
+	timePerPartition = duration.count();
 
-	cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
+	/*cout << setw(10) << to_string(k1) + "th" << setw(10) << to_string(k2) + "th" << setw(10) << to_string(k3) + "th" << setw(10) << to_string(k4) + "th" << setw(10) << to_string(k5) + "th" << endl;
 	cout << setw(10) << result[0] << setw(10) << result[1] << setw(10) << result[2] << setw(10) << result[3] << setw(10) << result[4] << endl;
-	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;
-	return 1;
+	cout << setw(10) << timePerPartition[0] << setw(10) << timePerPartition[1] << setw(10) << timePerPartition[2] << setw(10) << timePerPartition[3] << setw(10) << timePerPartition[4] << endl;*/
+	return timePerPartition;
 
 }
 //long double  Select_kth_4(vector<int> const& A)
@@ -323,14 +307,18 @@ int main(void)
 	long double result[5];
 
 	int nList[7] = { 10, 50, 100, 500, 1000, 5000, 10000 };
+	long double res1=0;
+	long double res2=0;
+	long double res3=0;
+	long double res4=0;
 	for (int i = 0; i < 7; i++)
 	{
 		int N = nList[i];									// assign the array size N
 		int kList[5] = { 0, N / 4, N / 2, 3 * N / 4,N };	// calculate Kth positions after having size N
-		long double  averageTime1;							// averageTime for array size N
-		long double  averageTime2;
-		long double  averageTime3;
-		long double  averageTime4;
+		long double  averageTime1=0;							// averageTime for array size N
+		long double  averageTime2=0;
+		long double  averageTime3=0;
+		long double  averageTime4=0;
 		for (int j = 1; j <= SET_AMOUNT; ++j)				// for every Data Set, we test with 5 different kth values
 		{
 			vector<int> a = generateList(N);
@@ -344,42 +332,42 @@ int main(void)
 				long double  timePerPivot2 = 0;
 				long double  timePerPivot3 = 0;
 				long double  timePerPivot4 = 0;
-				for (int t = 1; t < TEST_TRIAL; ++t)
+				for (int t = 1; t <= TEST_TRIAL; ++t)
 				{
-					timePerPivot1 += Select_kth_1(a);
-					timePerPivot2 += Select_kth_2(a);
-					timePerPivot3 += Select_kth_3(a);
-					timePerPivot4 += Select_kth_4(a);
+					timePerPivot1 += Select_kth_1(a) / 1000000;
+					//timePerPivot2 += Select_kth_2(a, kList[k]) / 1000000;
+					//timePerPivot3 += Select_kth_3(a, kList[k]) / 1000000;
+					//timePerPivot4 += Select_kth_4(a, kList[k]);
 				}
-				totalTime1 += timePerPivot1 / 1000000;
-				totalTime2 += timePerPivot2 / 1000000;
-				totalTime3 += timePerPivot3 / 1000000;
-				totalTime4 += timePerPivot4 / 1000000;
+				totalTime1 += timePerPivot1 / TEST_TRIAL;
+				totalTime2 += timePerPivot2 / TEST_TRIAL;
+				totalTime3 += timePerPivot3 / TEST_TRIAL;
+				totalTime4 += timePerPivot4 / TEST_TRIAL;
 			}
-			averageTime1 = totalTime1 / SET_AMOUNT * TEST_TRIAL;
-			averageTime2 = totalTime2 / SET_AMOUNT * TEST_TRIAL;
-			averageTime3 = totalTime3 / SET_AMOUNT * TEST_TRIAL;
-			averageTime4 = totalTime4 / SET_AMOUNT * TEST_TRIAL;
+			averageTime1 += totalTime1 / 5;
+			averageTime2 += totalTime2 / 5;
+			averageTime3 += totalTime3 / 5;
+			averageTime4 += totalTime4 / 5;
 		}
 
 		//cout << "Total time after 1000 sets = " << totalTime << " nsec" << endl;
-		cout << "For size " << N << ", K1 average is: " << averageTime1 << " nsec" << endl;
-		cout << "For size " << N << ", K2 average is: " << averageTime2 << " nsec" << endl;
-		cout << "For size " << N << ", K3 average is: " << averageTime3 << " nsec" << endl;
-		cout << "For size " << N << ", K4 average is: " << averageTime4 << " nsec" << endl;
+		cout << "For size " << N << ", K1 average is: " << averageTime1 / SET_AMOUNT << " msec" << endl;
+		cout << "For size " << N << ", K2 average is: " << averageTime2 / SET_AMOUNT << " msec" << endl;
+		cout << "For size " << N << ", K3 average is: " << averageTime3 / SET_AMOUNT << " msec" << endl;
+		cout << "For size " << N << ", K4 average is: " << averageTime4 / SET_AMOUNT << " msec" << endl;
 	}
 
 
 	/* Below code is to test individually */
-	vector<int> a = generateList(10);
-	vector<int> b = generateList(50);
-	vector<int> c = generateList(100);
-	vector<int> d = generateList(500);
-	vector<int> e = generateList(1000);
-	cout << "Size " << a.size() << ": " << endl;
-	Select_kth_1(a);
-	Select_kth_2(a);
-	Select_kth_3(a);
+	//vector<int> a = generateList(10);
+	//vector<int> b = generateList(50);
+	//vector<int> c = generateList(100);
+	//vector<int> d = generateList(500);
+	//vector<int> e = generateList(1000);
+	//cout << "Size " << a.size() << ": " << endl;
+	//Select_kth_1(a);
+	//Select_kth_2(a);
+	//Select_kth_3(a);
 	//Select_kth_4(a);
 
 
@@ -392,11 +380,11 @@ int main(void)
 
 
 
-	cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K1+1) << endl;
-	cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K2 * 10 + 1)<< endl;
-	cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K3 * 10 + 1)<< endl;
-	cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K4 * 10 + 1)<< endl;
-	cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K5 * 10) << endl;
+	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K1+1) << endl;
+	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K2 * 10 + 1)<< endl;
+	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K3 * 10 + 1)<< endl;
+	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K4 * 10 + 1)<< endl;
+	//cout << "Median of Medians: " << kthSmallest(a, 0, 10 - 1, K5 * 10) << endl;
 
 
 
